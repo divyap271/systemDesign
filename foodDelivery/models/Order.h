@@ -1,4 +1,4 @@
-#ifdef ORDER_H
+#ifndef ORDER_H
 #define ORDER_H
 
 #include <iostream>
@@ -8,13 +8,13 @@
 #include "Restaurant.h"
 #include "MenuItem.h"
 #include "../strategies/PaymentStrategy.h"
-#include "utils/TimeUtil.h"
+#include "../utils/TimeUtils.h"
 
 using namespace std;
 
 class Order{
     protected:
-    static int nextOrderId;
+    inline static int nextOrderId = 1;
     int orderId;
     User* user;
     Restaurant* restaurant;
@@ -22,6 +22,7 @@ class Order{
     PaymentStrategy* paymentStrategy;
     double total;
     string schedule;
+    string status;
 
     public:
     Order(){
@@ -30,6 +31,7 @@ class Order{
         paymentStrategy = nullptr;
         total = 0.0;
         schedule = "";
+        status = "Placed";
         orderId = nextOrderId++;
     }
 
@@ -84,6 +86,30 @@ class Order{
     void setPaymentStrategy(PaymentStrategy* strategy){
         paymentStrategy = strategy;
     }
-}
+
+    string getStatus() const {
+        return status;
+    }
+
+    void setStatus(const string &s) {
+        status = s;
+    }
+
+    double getTotalAmount() const {
+        return total;
+    }
+
+    void setTotal(double t) {
+        total = t;
+    }
+
+    void setScheduled(const string &s) {
+        schedule = s;
+    }
+
+    string getScheduled() const {
+        return schedule;
+    }
+};
 
 #endif // ORDER_H

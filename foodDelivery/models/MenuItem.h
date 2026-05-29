@@ -1,5 +1,5 @@
-#ifndef MNUITEM_H
-#define MNUITEM_H
+#ifndef MENUITEM_H
+#define MENUITEM_H
 
 #include <iostream>
 #include <string>

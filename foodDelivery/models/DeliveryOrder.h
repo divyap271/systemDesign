@@ -1,12 +1,12 @@
 #ifndef DELIVERY_ORDER_H
 #define DELIVERY_ORDER_H
 
-#include "Order.h"
+#include "../models/Order.h"
 #include <string>
 
 using namespace std;
 
-class DeliveryOrder : public Order{
+class DeliveryOrder: public Order{
     private:
     string userAddress;
     

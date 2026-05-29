@@ -1,13 +1,14 @@
-#ifdef CART_H
+#ifndef CART_H
 #define CART_H
 
 #include <iostream>
 #include <vector>
 #include <string>
-#include "../models/MenuItem.h"
-#include "../models/Order.h"
+#include "MenuItem.h"
 
 using namespace std;
+
+class Restaurant;
 
 class Cart{
     private:
@@ -19,7 +20,7 @@ class Cart{
         restaurant = nullptr;
     }
 
-    void addIteem(const MenuItem &item){
+    void addItem(const MenuItem &item){
         if(!restaurant){
             cerr<<"No restaurant selected for the cart!"<<endl;
             return;
@@ -41,6 +42,7 @@ class Cart{
 
     void clear(){
         items.clear();
+        restaurant = nullptr;
     }
 
     void setRestaurant(Restaurant* r){
@@ -51,9 +53,9 @@ class Cart{
         return restaurant;
     }
 
-    void vector<MenuItem> getItems() const{
+    vector<MenuItem> getItems() const{
         return items;
     }
-}
+};
 
 #endif // CART_H

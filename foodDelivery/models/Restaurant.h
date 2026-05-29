@@ -10,17 +10,17 @@ using namespace std;
 
 class Restaurant{
     private:
-    static int nextRestaurantId; // static variable to generate unique restaurant IDs
+    inline static int nextRestaurantId = 1;
     int restaurantId;
     string name;
     string location;
     vector<MenuItem> menuItems; // List of menu items offered by the restaurant
 
     public:
-    Restaurant(const string &name, const string &Location){
-        this-> name = name;
-        this-> location = location;
-        this-> restaurantId = nextRestaurantId++;
+    Restaurant(const string &name, const string &location){
+        this->name = name;
+        this->location = location;
+        this->restaurantId = nextRestaurantId++;
     }
 
     ~Restaurant() {
@@ -52,7 +52,5 @@ class Restaurant{
         return menuItems;
     }
 };
-
-int Restaurant::nextRestaurantId = 0;
 
 #endif // RESTAURANT_H

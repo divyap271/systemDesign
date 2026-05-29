@@ -1,4 +1,4 @@
-#ifdef RESTAURANTMANAGER_H
+#ifndef RESTAURANTMANAGER_H
 #define RESTAURANTMANAGER_H
 
 #include <vector>
@@ -12,7 +12,7 @@ class RestaurantManager
 {
     private:
         vector<Restaurant *> restaurants;
-        static RestaurantManager *instance;
+        inline static RestaurantManager *instance = nullptr;
 
         RestaurantManager() {}
 
@@ -47,5 +47,4 @@ class RestaurantManager
         }
 };
 
-RestaurantManager *RestaurantManager::instance = nullptr;
 #endif // RESTAURANTMANAGER_H

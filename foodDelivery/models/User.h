@@ -1,4 +1,4 @@
-#ifdef USER_H
+#ifndef USER_H
 #define USER_H
 
 #include <iostream>
@@ -15,7 +15,7 @@ class User{
     Cart* cart;
 
     public:
-    User(int UserId, const &name, const string &address){
+    User(int userId, const string &name, const string &address){
         this->userId = userId;
         this->name = name;
         this->address = address;
@@ -41,6 +41,6 @@ class User{
     Cart* getCart() const{
         return cart;
     }
-}
+};
 
-endif // USER_H
+#endif // USER_H

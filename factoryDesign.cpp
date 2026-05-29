@@ -107,3 +107,36 @@ public:
 };
 // Factory Method is a single method inside a class. Its only job is to let subclasses decide which one specific object to instantiate.
 // Abstract Factory is a whole class. Its job is to group multiple Factory Methods together so you don't accidentally put a MacCheckbox on a screen next to a WindowButton.
+
+int main(){
+    // simple factory
+    auto button1 = ButtonFactory::createButton("Window");
+    button1->render();
+
+    auto button2 = ButtonFactory::createButton("Mac");
+    button2->render();
+
+    // factory method
+    unique_ptr<ButtonCreator> creator1 = make_unique<WindowButtonCreator>();
+    auto button3 = creator1->createButton();
+    button3->render();
+
+    unique_ptr<ButtonCreator> creator2 = make_unique<MacButtonCreator>();
+    auto button4 = creator2->createButton();
+    button4->render();
+
+    // abstract factory
+    unique_ptr<GUIFactory> factory1 = make_unique<WindowFactory>();
+    auto button5 = factory1->createButton();
+    auto checkbox1 = factory1->createCheckbox();
+    button5->render();
+    checkbox1->render();
+
+    unique_ptr<GUIFactory> factory2 = make_unique<MacFactory>();
+    auto button6 = factory2->createButton();
+    auto checkbox2 = factory2->createCheckbox();
+    button6->render();
+    checkbox2->render();
+
+    return 0;
+}
