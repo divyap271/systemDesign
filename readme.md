@@ -1,432 +1,266 @@
 # 🏛️ Ultimate System Design & Design Patterns Guide (C++)
 
-This repository provides a deep dive into **SOLID Principles** and **Design Patterns**, with exact C++ implementations and detailed UML diagrams.
+This repository is a comprehensive reference for **Object-Oriented Programming (OOP)**, **SOLID Principles**, and **Design Patterns**, featuring exact C++ implementations and detailed UML diagrams.
 
 ---
 
-## 🎯 SOLID Design Principles
+## 📑 Table of Contents
+1. [🧩 OOP Pillars](#1-oop-pillars)
+2. [🎯 SOLID Design Principles](#2-solid-design-principles)
+3. [🏗️ Creational Patterns](#3-creational-patterns)
+4. [🧱 Structural Patterns](#4-structural-patterns)
+5. [🔄 Behavioral Patterns](#5-behavioral-patterns)
+6. [🍔 Case Study: Food Delivery Application](#6-case-study-food-delivery-application)
+
+---
+
+## 1. 🧩 OOP Pillars
+
+### 🧱 Encapsulation
+*   **Description:** Bundling data and methods into a single unit (class) and restricting access using `private`/`protected` keywords.
+*   **Why use it?:** To protect internal state and reduce complexity by hiding details.
+
+### 🔍 Abstraction
+*   **Description:** Hiding complex implementation details and showing only essential features (interfaces/abstract classes).
+*   **Why use it?:** To decouple "what" an object does from "how" it does it.
+
+### 🧬 Inheritance
+*   **Description:** Allowing a class to derive attributes and behaviors from another class.
+*   **Why use it?:** For code reusability and establishing "is-a" relationships.
+
+### 🎭 Polymorphism
+*   **Description:** The ability of different classes to respond to the same function call (Compile-time via overloading, Runtime via virtual functions).
+*   **Why use it?:** To write generic code that works with different types of objects.
+
+---
+
+## 2. 🎯 SOLID Design Principles
 
 ### 1. Single Responsibility Principle (SRP)
-*   **Good Implementation (from solidPrinciple.cpp)**
+*   **Description:** A class should have only one reason to change.
+*   **Advantages:** Better maintainability and testability.
+*   **Use Cases:** Separating UI logic from business logic.
 ```mermaid
 classDiagram
-    class Report {
-        +string content
-        +generateReport()
-    }
-    class reportSaver {
-        +saveToFile(Report report, string fileName)
-    }
+    class Report { +string content, +generateReport() }
+    class reportSaver { +saveToFile(Report report, string fileName) }
     Report ..> reportSaver : used by
 ```
 
 ### 2. Open/Closed Principle (OCP)
+*   **Description:** Open for extension, closed for modification.
+*   **Why use it?:** To add features without breaking existing code.
 ```mermaid
 classDiagram
-    class DiscountStrategy {
-        <<interface>>
-        +calculate(double amount)* double
-    }
-    class RegularCustomerDiscount {
-        +calculate(double amount) double
-    }
-    class preminumDiscount {
-        +calculate(double amount) double
-    }
+    class DiscountStrategy { <<interface>> +calculate(double amount)* double }
+    class RegularCustomerDiscount { +calculate(double amount) double }
+    class preminumDiscount { +calculate(double amount) double }
     DiscountStrategy <|-- RegularCustomerDiscount
     DiscountStrategy <|-- preminumDiscount
 ```
 
 ### 3. Liskov Substitution Principle (LSP)
+*   **Description:** Subclasses must be substitutable for their base classes.
 ```mermaid
 classDiagram
-    class Shape {
-        <<interface>>
-        +area()* double
-    }
-    class Rectangle {
-        -double width
-        -double height
-        +Rectangle(double w, double h)
-        +area() double
-    }
-    class Square {
-        -double side
-        +Square(double s)
-        +area() double
-    }
+    class Shape { <<interface>> +area()* double }
+    class Rectangle { -double width, -double height, +area() double }
+    class Square { -double side, +area() double }
     Shape <|-- Rectangle
     Shape <|-- Square
 ```
 
 ### 4. Interface Segregation Principle (ISP)
+*   **Description:** Clients shouldn't be forced to depend on methods they don't use.
 ```mermaid
 classDiagram
-    class Worker {
-        <<interface>>
-        +work()*
-    }
-    class Eater {
-        <<interface>>
-        +eat()*
-    }
-    class Human {
-        +work()
-        +eat()
-    }
-    class Robot {
-        +work()
-    }
+    class Worker { <<interface>> +work()* }
+    class Eater { <<interface>> +eat()* }
+    class Human { +work(), +eat() }
+    class Robot { +work() }
     Worker <|-- Human
     Eater <|-- Human
     Worker <|-- Robot
 ```
 
 ### 5. Dependency Inversion Principle (DIP)
+*   **Description:** Depend on abstractions, not concretions.
 ```mermaid
 classDiagram
-    class Switchable {
-        <<interface>>
-        +turnOn()*
-        +turnOff()*
-    }
-    class Lightbulb {
-        +turnOn()
-        +turnOff()
-    }
-    class Button {
-        -Switchable& device
-        +Button(Switchable& dev)
-        +press()
-    }
+    class Switchable { <<interface>> +turnOn()*, +turnOff()* }
+    class Lightbulb { +turnOn(), +turnOff() }
+    class Button { -Switchable& device, +press() }
     Switchable <|-- Lightbulb
     Button o-- Switchable
 ```
 
 ---
 
-## 🏗️ Creational Patterns
+## 3. 🏗️ Creational Patterns
 
-### 🏭 Factory Method & Abstract Factory
+### 🏭 Factory (Simple, Method, and Abstract)
+*   **Description:** Defines an interface for creating objects but lets subclasses decide which class to instantiate.
+*   **Advantages:** Decouples client from concrete classes.
+*   **Disadvantages:** Complexity increases with more subclasses.
+*   **UML (Abstract Factory):**
 ```mermaid
 classDiagram
     class Button { <<interface>> +render()* }
     class Checkbox { <<interface>> +render()* }
     class WindowButton { +render() }
     class MacButton { +render() }
-    class WindowCheckbox { +render() }
-    class MacCheckbox { +render() }
-    
-    class GUIFactory {
-        <<interface>>
-        +createButton()* Button
-        +createCheckbox()* Checkbox
-    }
-    class WindowFactory {
-        +createButton() Button
-        +createCheckbox() Checkbox
-    }
-    class MacFactory {
-        +createButton() Button
-        +createCheckbox() Checkbox
-    }
-
+    class GUIFactory { <<interface>> +createButton()*, +createCheckbox()* }
+    class WindowFactory { +createButton(), +createCheckbox() }
+    class MacFactory { +createButton(), +createCheckbox() }
     Button <|-- WindowButton
     Button <|-- MacButton
-    Checkbox <|-- WindowCheckbox
-    Checkbox <|-- MacCheckbox
     GUIFactory <|-- WindowFactory
     GUIFactory <|-- MacFactory
     WindowFactory ..> WindowButton : creates
-    WindowFactory ..> WindowCheckbox : creates
-    MacFactory ..> MacButton : creates
-    MacFactory ..> MacCheckbox : creates
 ```
 
 ### 👷 Builder
+*   **Description:** Constructs complex objects step-by-step.
+*   **Why use it?:** To avoid "telescoping constructors" and create different representations.
 ```mermaid
 classDiagram
-    class Computer {
-        +string cpu
-        +string gpu
-        +string ram
-        +string storage
-        +bool hsWifi
-        +displaySpecs()
-    }
-    class ComputerBuilder {
-        -unique_ptr~Computer~ computer
-        +ComputerBuilder()
-        +reset()
-        +setCpu(string cpu) ComputerBuilder&
-        +setGpu(string gpu) ComputerBuilder&
-        +setRam(string ram) ComputerBuilder&
-        +setStorage(string storage) ComputerBuilder&
-        +setHasWifi(bool hasWifi) ComputerBuilder&
-        +build() unique_ptr~Computer~
-    }
+    class Computer { +string cpu, +string gpu, +string ram, +string storage, +bool hsWifi, +displaySpecs() }
+    class ComputerBuilder { -unique_ptr~Computer~ computer, +setCpu(), +setGpu(), +build() }
     ComputerBuilder *-- Computer
 ```
 
 ### 👑 Singleton
+*   **Description:** Ensures only one instance of a class exists globally.
 ```mermaid
 classDiagram
-    class ConfigurationManager {
-        -string configData
-        -ConfigurationManager()
-        +static getInstance() ConfigurationManager&
-        +setConfig(string config)
-        +getConfig() string
-    }
+    class ConfigurationManager { -ConfigurationManager(), +static getInstance() ConfigurationManager&, +getConfig() }
 ```
 
 ---
 
-## 🧱 Structural Patterns
+## 4. 🧱 Structural Patterns
 
 ### 🔌 Adapter
+*   **Description:** Converts one interface into another that a client expects.
 ```mermaid
 classDiagram
     class TypeCPhone { <<interface>> +chargeWithTypeC()* }
-    class OldMicroUsbPhone { +chargeWithMicroUsb() }
-    class MicroUsbToTypeCAdapter {
-        -unique_ptr~OldMicroUsbPhone~ legacyPhone
-        +chargeWithTypeC()
-    }
+    class MicroUsbToTypeCAdapter { -unique_ptr~OldMicroUsbPhone~ legacyPhone, +chargeWithTypeC() }
     TypeCPhone <|-- MicroUsbToTypeCAdapter
-    MicroUsbToTypeCAdapter o-- OldMicroUsbPhone
 ```
 
 ### 🌉 Bridge
+*   **Description:** Decouples abstraction from implementation so both can vary independently.
 ```mermaid
 classDiagram
-    class Device {
-        <<interface>>
-        +isEnabled()* bool
-        +disabled()*
-        +setVolume(int percent)*
-    }
-    class Tv { +isEnabled(), +disabled(), +setVolume() }
-    class Radio { +isEnabled(), +disabled(), +setVolume() }
-    class RemoteControl {
-        #shared_ptr~Device~ device
-        +togglePower()
-        +volumeUp()
-    }
-    class AdvancedRemoteControl { +mute() }
-    
-    Device <|-- Tv
-    Device <|-- Radio
+    class Device { <<interface>> +isEnabled()*, +disabled()* }
+    class RemoteControl { #shared_ptr~Device~ device, +togglePower() }
     RemoteControl o-- Device
-    RemoteControl <|-- AdvancedRemoteControl
 ```
 
 ### 🌳 Composite
+*   **Description:** Treats individual objects and compositions of objects uniformly.
 ```mermaid
 classDiagram
-    class FileSystemItem {
-        #string name
-        +display(string indentation)*
-        +getSize()* int
-    }
-    class File {
-        -int size
-        +display(string indentation)
-        +getSize() int
-    }
-    class Folder {
-        -vector~unique_ptr~FileSystemItem~~ children
-        +add(unique_ptr~FileSystemItem~ item)
-        +display(string indentation)
-        +getSize() int
-    }
-    FileSystemItem <|-- File
+    class FileSystemItem { <<interface>> +getSize()* }
+    class Folder { -vector~unique_ptr~FileSystemItem~~ children, +getSize() }
     FileSystemItem <|-- Folder
     Folder o-- FileSystemItem
 ```
 
 ### 🧣 Decorator
+*   **Description:** Dynamically adds behavior to an object without changing its class.
 ```mermaid
 classDiagram
-    class Beverage {
-        <<interface>>
-        +getDescription()* string
-        +cost()* double
-    }
-    class Espresso { +getDescription(), +cost() }
-    class CondimentDecorator {
-        #unique_ptr~Beverage~ beverage
-    }
-    class Milk { +getDescription(), +cost() }
-    class Sugar { +getDescription(), +cost() }
-
-    Beverage <|-- Espresso
+    class Beverage { <<interface>> +cost()* }
+    class CondimentDecorator { #unique_ptr~Beverage~ beverage }
     Beverage <|-- CondimentDecorator
-    CondimentDecorator <|-- Milk
-    CondimentDecorator <|-- Sugar
     CondimentDecorator o-- Beverage
 ```
 
 ### 🏛️ Facade
+*   **Description:** Provides a simplified interface to a complex subsystem.
 ```mermaid
 classDiagram
-    class HomeTheaterFacade {
-        -unique_ptr~TheaterLights~ lights
-        -unique_ptr~Projector~ projector
-        -unique_ptr~Amplifier~ amp
-        +watchMovie()
-        +endMovie()
-    }
-    class TheaterLights { +dim(), +on() }
-    class Projector { +on(), +off(), +setInputWideScreen() }
-    class Amplifier { +on(), +off(), +setStreamingAudio(), +setVolume() }
-
-    HomeTheaterFacade --> TheaterLights
-    HomeTheaterFacade --> Projector
-    HomeTheaterFacade --> Amplifier
+    class HomeTheaterFacade { -TheaterLights lights, -Projector proj, +watchMovie() }
 ```
 
 ### 🪶 Flyweight
+*   **Description:** Minimizes memory usage by sharing as much data as possible with similar objects.
 ```mermaid
 classDiagram
-    class TreeModel {
-        -string name
-        -string color
-        -string textureData
-        +draw(int x, int y)
-    }
-    class TreeFactory {
-        -unordered_map~string, shared_ptr~TreeModel~~ treeModels
-        +getTreeModel(string name, string color, string texture) shared_ptr~TreeModel~
-    }
-    class Tree {
-        -int x, y
-        -shared_ptr~TreeModel~ model
-        +draw()
-    }
-    TreeFactory o-- TreeModel
+    class TreeFactory { -Map treeModels, +getTreeModel() }
+    class Tree { -int x, y, -TreeModel model }
     Tree o-- TreeModel
 ```
 
 ### 🛡️ Proxy
+*   **Description:** Provides a placeholder for another object to control access.
 ```mermaid
 classDiagram
     class Graphic { <<interface>> +draw()* }
-    class HighResImage { -string filename, -loadFromDisk(), +draw() }
-    class ImageProxy {
-        -string filename
-        -unique_ptr~HighResImage~ realImage
-        +draw()
-    }
-    Graphic <|-- HighResImage
+    class ImageProxy { -unique_ptr~HighResImage~ realImage, +draw() }
     Graphic <|-- ImageProxy
-    ImageProxy o-- HighResImage
 ```
 
 ---
 
-## 🔄 Behavioral Patterns
+## 5. 🔄 Behavioral Patterns
 
 ### 🔗 Chain of Responsibility
+*   **Description:** Passes a request along a chain of potential handlers.
 ```mermaid
 classDiagram
-    class SupportHandler {
-        #shared_ptr~SupportHandler~ nextHandler
-        +setNext(shared_ptr~SupportHandler~ next) shared_ptr~SupportHandler~
-        +handleRequest(Ticket ticket)
-    }
-    class AiChatbot { +handleRequest(Ticket ticket) }
-    class HumanAgent { +handleRequest(Ticket ticket) }
-    class TechLead { +handleRequest(Ticket ticket) }
-    
-    SupportHandler <|-- AiChatbot
-    SupportHandler <|-- HumanAgent
-    SupportHandler <|-- TechLead
+    class SupportHandler { #shared_ptr~SupportHandler~ next, +handleRequest() }
     SupportHandler o-- SupportHandler
 ```
 
 ### 📜 Command
+*   **Description:** Encapsulates a request as an object, allowing parameterization and undo/redo.
 ```mermaid
 classDiagram
     class Command { <<interface>> +execute()*, +undo()* }
-    class LightOnCommand { -Light* light, +execute(), +undo() }
-    class LightOffCommand { -Light* light, +execute(), +undo() }
-    class Light { +on(), +off() }
-    class RemoteControl {
-        -vector~Command*~ onCommands
-        -vector~Command*~ offCommands
-        +setCommand(int slot, Command* on, Command* off)
-        +pressOn(int slot)
-        +pressOff(int slot)
-        +pressUndo(int slot)
-    }
-    Command <|-- LightOnCommand
-    Command <|-- LightOffCommand
-    LightOnCommand o-- Light
-    LightOffCommand o-- Light
+    class RemoteControl { -vector~Command*~ onCommands, +pressOn() }
     RemoteControl o-- Command
 ```
 
 ### 📑 Iterator
+*   **Description:** Provides a way to access elements of a collection sequentially without exposing its underlying structure.
 ```mermaid
 classDiagram
-    class Iterator { <<interface>> +hasNext()* bool, +next()* Book }
-    class ICollection { <<interface>> +createIterator()* unique_ptr~Iterator~ }
-    class Bookshelf { -vector~Book~ books, +addBook(), +getBooks(), +createIterator() }
-    class BookshelfIterator { -Bookshelf& bookshelf, -size_t index, +hasNext(), +next() }
-    
+    class Iterator { <<interface>> +hasNext()*, +next()* }
+    class Bookshelf { +createIterator() }
     Iterator <|-- BookshelfIterator
-    ICollection <|-- Bookshelf
-    BookshelfIterator o-- Bookshelf
 ```
 
 ### 🔔 Observer
+*   **Description:** One-to-many dependency where state changes notify all dependents.
 ```mermaid
 classDiagram
-    class IObserver { <<interface>> +update(float temp)* }
-    class ISubject { <<interface>> +attach(IObserver*), +detach(IObserver*), +notify()* }
-    class WeatherStation { -vector~IObserver*~ observers, -float temperature, +attach(), +detach(), +notify(), +setTemperature() }
-    class PhoneDisplay { +update(float temp) }
-    class WindowDisplay { +update(float temp) }
-
-    IObserver <|-- PhoneDisplay
-    IObserver <|-- WindowDisplay
+    class ISubject { +attach(), +notify()* }
+    class WeatherStation { +notify(), +setTemperature() }
     ISubject <|-- WeatherStation
-    WeatherStation o-- IObserver
 ```
 
 ### 🎯 Strategy
+*   **Description:** Defines a family of algorithms and makes them interchangeable at runtime.
 ```mermaid
 classDiagram
-    class PaymentStrategy { <<interface>> +pay(double amount)* }
-    class CreditCardPayment { -string cardNumber, +pay(double amount) }
-    class PayPalPayment { -string email, +pay(double amount) }
-    class ShoppingCart { -unique_ptr~PaymentStrategy~ paymentMethod, +setPaymentMethod(), +checkout() }
-
-    PaymentStrategy <|-- CreditCardPayment
-    PaymentStrategy <|-- PayPalPayment
+    class PaymentStrategy { <<interface>> +pay()* }
+    class ShoppingCart { -unique_ptr~PaymentStrategy~ method, +checkout() }
     ShoppingCart o-- PaymentStrategy
 ```
 
 ### 📋 Template Method
+*   **Description:** Defines the skeleton of an algorithm in a base class, deferring some steps to subclasses.
 ```mermaid
 classDiagram
-    class DocumentParser {
-        +processDocument(string filePath)
-        #openFile(), #runAnalytics(), #closeFile()
-        #extractRawText()*
-        #hookSendNotification() bool
-    }
-    class PdfParser { #extractRawText(), #hookSendNotification() }
-    class CsvParser { #extractRawText() }
-    
-    DocumentParser <|-- PdfParser
-    DocumentParser <|-- CsvParser
+    class DocumentParser { +processDocument(), #extractRawText()* }
 ```
 
 ---
 
-## 🍔 Case Study: Food Delivery Application
+## 6. 🍔 Case Study: Food Delivery Application
 
 ### Detailed System UML Diagram
 ```mermaid
@@ -435,189 +269,19 @@ classDiagram
         -RestaurantManager* restaurantManager
         -OrderManager* orderManager
         -OrderFactory* orderFactory
-        +FoodDeliverySystem()
-        +~FoodDeliverySystem()
-        +addRestaurant(Restaurant* r)
-        +searchRestaurants(string location) vector~Restaurant*~
-        +placeOrder(User* user, Restaurant* restaurant, PaymentStrategy* paymentMethod, string type) bool
-        +showOrders()
+        +placeOrder()
     }
-
-    class RestaurantManager {
-        -vector~Restaurant*~ restaurants
-        -static RestaurantManager* instance
-        -RestaurantManager()
-        +static getInstance() RestaurantManager*
-        +addRestaurant(Restaurant* restaurant)
-        +searchByLocation(string loc) vector~Restaurant*~
-    }
-
-    class OrderManager {
-        -vector~Order*~ orders
-        -static OrderManager* instance
-        -OrderManager()
-        +static getInstance() OrderManager*
-        +addOrder(Order* order)
-        +listOrders()
-    }
-
-    class OrderFactory {
-        <<interface>>
-        +createOrder(User* user, Cart* cart, Restaurant* restaurant, vector~MenuItem~ menuItems, PaymentStrategy* paymentStrategy, string orderType) Order*
-    }
-
-    class NowOrderFactory {
-        +createOrder(User* user, Cart* cart, Restaurant* restaurant, vector~MenuItem~ menuItems, PaymentStrategy* paymentStrategy, string orderType) Order*
-    }
-
-    class Order {
-        <<abstract>>
-        #static int nextOrderId
-        #int orderId
-        #User* user
-        #Restaurant* restaurant
-        #vector~MenuItem~ items
-        #PaymentStrategy* paymentStrategy
-        #double total
-        #string schedule
-        #string status
-        +Order()
-        +virtual ~Order()
-        +processPayment() bool
-        +virtual getType() string*
-        +getOrderId() int
-        +setUser(User* u)
-        +getUser() User*
-        +setRestaurant(Restaurant* r)
-        +getRestaurant() Restaurant*
-        +setItems(vector~MenuItem~ items)
-        +getItems() vector~MenuItem~
-        +setPaymentStrategy(PaymentStrategy* strategy)
-        +getStatus() string
-        +setStatus(string s)
-        +getTotalAmount() double
-        +setTotal(double t)
-        +setScheduled(string s)
-        +getScheduled() string
-    }
-
-    class DeliveryOrder {
-        -string userAddress
-        +DeliveryOrder()
-        +getType() string
-        +setUserAddress(string address)
-        +getUserAddress() string
-    }
-
-    class PickupOrder {
-        -string restaurantAddress
-        +PickupOrder()
-        +getType() string
-        +setRestaurantAddress(string address)
-        +getRestaurantAddress() string
-    }
-
-    class User {
-        -int userId
-        -string name
-        -string address
-        -Cart* cart
-        +User(int userId, string name, string address)
-        +~User()
-        +getName() string
-        +getAddress() string
-        +setaddress(string a)
-        +getCart() Cart*
-    }
-
-    class Cart {
-        -Restaurant* restaurant
-        -vector~MenuItem~ items
-        +Cart()
-        +addItem(MenuItem item)
-        +getTotalPrice() double
-        +isEmpty() bool
-        +clear()
-        +setRestaurant(Restaurant* r)
-        +getRestaurant() Restaurant*
-        +getItems() vector~MenuItem~
-    }
-
-    class Restaurant {
-        -static int nextRestaurantId
-        -int restaurantId
-        -string name
-        -string location
-        -vector~MenuItem~ menuItems
-        +Restaurant(string name, string location)
-        +~Restaurant()
-        +getName() string
-        +setName(string n)
-        +getLocation() string
-        +setLocation(string loc)
-        +addMenuItem(MenuItem item)
-        +getMenuItems() vector~MenuItem~
-    }
-
-    class MenuItem {
-        -string code
-        -string name
-        -int price
-        +MenuItem(string code, string name, int price)
-        +getCode() string
-        +setCode(string c)
-        +getName() string
-        +setName(string n)
-        +getPrice() int
-        +setPrice(int p)
-    }
-
-    class PaymentStrategy {
-        <<interface>>
-        +virtual ~PaymentStrategy()
-        +virtual pay(double amount)*
-    }
-
-    class CreditCardPaymentStrategy {
-        -string cardNumber
-        +CreditCardPaymentStrategy(string card)
-        +pay(double amount)
-    }
-
-    class UpiPaymentStrategy {
-        -string mobile
-        +UpiPaymentStrategy(string mob)
-        +pay(double amount)
-    }
-
-    class NotificationService {
-        +static notify(Order* order)
-    }
-
-    class TimeUtils {
-        +static getCurrentTime() string
-    }
-
-    FoodDeliverySystem --> RestaurantManager
+    class Order { <<abstract>> #User* user, #Restaurant* restaurant, +processPayment() }
+    class User { -Cart* cart }
+    class OrderFactory { <<interface>> +createOrder()* }
+    
     FoodDeliverySystem --> OrderManager
     FoodDeliverySystem --> OrderFactory
-    OrderFactory <|-- NowOrderFactory
     Order <|-- DeliveryOrder
     Order <|-- PickupOrder
-    User "1" *-- "1" Cart
-    Cart "0..*" o-- "1" Restaurant
-    Cart "0..*" o-- "0..*" MenuItem
-    Restaurant "1" *-- "0..*" MenuItem
-    Order "1" o-- "1" User
-    Order "1" o-- "1" Restaurant
-    Order "1" *-- "0..*" MenuItem
-    Order "1" o-- "1" PaymentStrategy
-    PaymentStrategy <|-- CreditCardPaymentStrategy
-    PaymentStrategy <|-- UpiPaymentStrategy
-    OrderManager "1" o-- "0..*" Order
-    RestaurantManager "1" o-- "0..*" Restaurant
-    FoodDeliverySystem ..> NotificationService : uses
-    NowOrderFactory ..> DeliveryOrder : creates
-    NowOrderFactory ..> PickupOrder : creates
-    NowOrderFactory ..> TimeUtils : uses
+    User *-- Cart
+    Order o-- PaymentStrategy
 ```
+
+---
+*Developed for educational purposes in C++.*
