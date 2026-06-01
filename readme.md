@@ -1,172 +1,432 @@
 # 🏛️ Ultimate System Design & Design Patterns Guide (C++)
 
-Welcome to the comprehensive reference guide for **Design Patterns** and **SOLID Principles**. This repository is designed to be a "one-stop shop" for learning how to build scalable, maintainable, and robust software systems using C++.
+This repository provides a deep dive into **SOLID Principles** and **Design Patterns**, with exact C++ implementations and detailed UML diagrams.
 
 ---
 
-## 📑 Table of Contents
-1. [🛠️ Getting Started](#-getting-started)
-2. [🎯 SOLID Design Principles (Deep Dive)](#-solid-design-principles-deep-dive)
-3. [🏗️ Creational Design Patterns](#-creational-design-patterns)
-4. [🧱 Structural Design Patterns](#-structural-design-patterns)
-5. [🔄 Behavioral Design Patterns](#-behavioral-design-patterns)
-6. [🍔 Case Study: Food Delivery Application](#-case-study-food-delivery-application)
-
----
-
-## 🛠️ Getting Started
-
-### Prerequisites
-- A C++ compiler (e.g., `g++`, `clang++`).
-- Basic understanding of Object-Oriented Programming (Classes, Inheritance, Polymorphism).
-
-### How to Run Examples
-Each pattern is contained in a single standalone file for easy experimentation. To compile and run any pattern, use the following commands:
-
-```bash
-# Example: Running the Strategy Pattern
-g++ strategyDesign.cpp -o strategy && ./strategy
-
-# Example: Running the Builder Pattern
-g++ builderDesign.cpp -o builder && ./builder
-```
-
----
-
-## 🎯 SOLID Design Principles (Deep Dive)
-
-The SOLID principles are the foundation of clean architecture. Below are detailed breakdowns with "Bad" vs. "Good" implementation examples.
+## 🎯 SOLID Design Principles
 
 ### 1. Single Responsibility Principle (SRP)
-*   **Definition:** A class should have one, and only one, reason to change.
-*   **The Problem:** "God Classes" that handle everything (logic, database, UI) are fragile and hard to test.
-*   **Detailed Example:**
-    *   ❌ **Bad:** A `User` class that handles both user data and saving that data to a database.
-    *   ✅ **Good:** A `User` class for data and a `UserRepository` class for persistence.
-```cpp
-// Good Implementation (from solidPrinciple.cpp)
-class Report {
-public:
-    string content;
-    void generate() { content = "Data"; }
-};
-
-class ReportSaver {
-public:
-    void saveToFile(const Report& r, string file) { /* Logic */ }
-};
+*   **Good Implementation (from solidPrinciple.cpp)**
+```mermaid
+classDiagram
+    class Report {
+        +string content
+        +generateReport()
+    }
+    class reportSaver {
+        +saveToFile(Report report, string fileName)
+    }
+    Report ..> reportSaver : used by
 ```
 
 ### 2. Open/Closed Principle (OCP)
-*   **Definition:** Software entities should be open for extension but closed for modification.
-*   **The Problem:** Modifying existing code to add features often introduces bugs in previously working parts.
-*   **Detailed Example:**
-    *   ❌ **Bad:** Using a massive `switch` statement to calculate discounts for different customer types.
-    *   ✅ **Good:** Using an abstract `DiscountStrategy` and creating subclasses for each type.
+```mermaid
+classDiagram
+    class DiscountStrategy {
+        <<interface>>
+        +calculate(double amount)* double
+    }
+    class RegularCustomerDiscount {
+        +calculate(double amount) double
+    }
+    class preminumDiscount {
+        +calculate(double amount) double
+    }
+    DiscountStrategy <|-- RegularCustomerDiscount
+    DiscountStrategy <|-- preminumDiscount
+```
 
 ### 3. Liskov Substitution Principle (LSP)
-*   **Definition:** Subclasses should be replaceable with their base classes without breaking the app.
-*   **The Problem:** Inheritance that breaks expected behavior (e.g., a `Square` class inheriting from `Rectangle` and overriding `setWidth` to also change `setHeight`).
-*   **Detailed Example:**
-    *   ✅ **Good:** Extracting commonality into a more generic `Shape` interface instead of force-fitting inheritance.
+```mermaid
+classDiagram
+    class Shape {
+        <<interface>>
+        +area()* double
+    }
+    class Rectangle {
+        -double width
+        -double height
+        +Rectangle(double w, double h)
+        +area() double
+    }
+    class Square {
+        -double side
+        +Square(double s)
+        +area() double
+    }
+    Shape <|-- Rectangle
+    Shape <|-- Square
+```
 
 ### 4. Interface Segregation Principle (ISP)
-*   **Definition:** Clients should not be forced to depend on methods they do not use.
-*   **The Problem:** Massive interfaces that force subclasses to implement "dummy" or "empty" methods.
-*   **Detailed Example:**
-    *   ❌ **Bad:** A `Worker` interface with `work()` and `eat()` applied to a `Robot`.
-    *   ✅ **Good:** Splitting into `IWorkable` and `IEatable`.
+```mermaid
+classDiagram
+    class Worker {
+        <<interface>>
+        +work()*
+    }
+    class Eater {
+        <<interface>>
+        +eat()*
+    }
+    class Human {
+        +work()
+        +eat()
+    }
+    class Robot {
+        +work()
+    }
+    Worker <|-- Human
+    Eater <|-- Human
+    Worker <|-- Robot
+```
 
 ### 5. Dependency Inversion Principle (DIP)
-*   **Definition:** Depend on abstractions, not on concrete implementations.
-*   **The Problem:** High-level logic being hard-coded to specific low-level tools (like a specific database).
-*   **Detailed Example:**
-    *   ✅ **Good:** A `Button` class depending on a `Switchable` interface, rather than a specific `LightBulb` class.
+```mermaid
+classDiagram
+    class Switchable {
+        <<interface>>
+        +turnOn()*
+        +turnOff()*
+    }
+    class Lightbulb {
+        +turnOn()
+        +turnOff()
+    }
+    class Button {
+        -Switchable& device
+        +Button(Switchable& dev)
+        +press()
+    }
+    Switchable <|-- Lightbulb
+    Button o-- Switchable
+```
 
 ---
 
-## 🏗️ Creational Design Patterns
+## 🏗️ Creational Patterns
 
-### 🏭 Factory Method
-*   **Problem:** You don't know the exact types and dependencies of the objects your code should work with.
-*   **Why use it?:** To decouple the client from the specific class instantiation.
-*   **Implementation Snippet:**
-```cpp
-class Product { virtual void use() = 0; };
-class ConcreteProduct : public Product { void use() override { /* ... */ } };
+### 🏭 Factory Method & Abstract Factory
+```mermaid
+classDiagram
+    class Button { <<interface>> +render()* }
+    class Checkbox { <<interface>> +render()* }
+    class WindowButton { +render() }
+    class MacButton { +render() }
+    class WindowCheckbox { +render() }
+    class MacCheckbox { +render() }
+    
+    class GUIFactory {
+        <<interface>>
+        +createButton()* Button
+        +createCheckbox()* Checkbox
+    }
+    class WindowFactory {
+        +createButton() Button
+        +createCheckbox() Checkbox
+    }
+    class MacFactory {
+        +createButton() Button
+        +createCheckbox() Checkbox
+    }
 
-class Creator {
-public:
-    virtual unique_ptr<Product> create() = 0;
-};
+    Button <|-- WindowButton
+    Button <|-- MacButton
+    Checkbox <|-- WindowCheckbox
+    Checkbox <|-- MacCheckbox
+    GUIFactory <|-- WindowFactory
+    GUIFactory <|-- MacFactory
+    WindowFactory ..> WindowButton : creates
+    WindowFactory ..> WindowCheckbox : creates
+    MacFactory ..> MacButton : creates
+    MacFactory ..> MacCheckbox : creates
 ```
-*   **Advantages:** SRP (product creation in one place), OCP (new types added easily).
-*   **UML:** `Creator` -> `Product` (Interface) -> `ConcreteProduct`.
 
 ### 👷 Builder
-*   **Problem:** Constructors with 10+ parameters ("Telescoping Constructor").
-*   **Why use it?:** To construct complex objects step-by-step and keep the object's code clean.
-*   **Key Detail:** In our `builderDesign.cpp`, we use method chaining (`setCpu()->setRam()`) to make construction readable.
-
----
-
-## 🧱 Structural Design Patterns
-
-### 🔌 Adapter
-*   **Problem:** You have an existing class but its interface doesn't match the one you need.
-*   **Why use it?:** To make two incompatible interfaces work together without changing their source code.
-*   **Analogy:** A European plug adapter for a US laptop.
-
-### 🧣 Decorator
-*   **Problem:** You need to add responsibilities to objects at runtime without using a massive inheritance tree.
-*   **Why use it?:** To "wrap" objects in layers of functionality (e.g., `MilkDecorator` wrapping `Coffee`).
-
-### 🏛️ Facade
-*   **Problem:** A system is too complex to use directly (requires 20 steps to initialize).
-*   **Why use it?:** To provide a "Single Button" interface for a complex subsystem.
-
----
-
-## 🔄 Behavioral Design Patterns
-
-### 🏹 Strategy
-*   **Problem:** You have multiple ways to perform an action (like sorting or payment) and you want to swap them easily.
-*   **Why use it?:** To replace conditional statements with polymorphic behavior.
-*   **Implementation Snippet (from strategyDesign.cpp):**
-```cpp
-class PaymentStrategy { public: virtual void pay(double amount) = 0; };
-class CreditCard : public PaymentStrategy { /* implementation */ };
-
-class ShoppingCart {
-    unique_ptr<PaymentStrategy> method;
-public:
-    void setMethod(unique_ptr<PaymentStrategy> m) { method = move(m); }
-};
+```mermaid
+classDiagram
+    class Computer {
+        +string cpu
+        +string gpu
+        +string ram
+        +string storage
+        +bool hsWifi
+        +displaySpecs()
+    }
+    class ComputerBuilder {
+        -unique_ptr~Computer~ computer
+        +ComputerBuilder()
+        +reset()
+        +setCpu(string cpu) ComputerBuilder&
+        +setGpu(string gpu) ComputerBuilder&
+        +setRam(string ram) ComputerBuilder&
+        +setStorage(string storage) ComputerBuilder&
+        +setHasWifi(bool hasWifi) ComputerBuilder&
+        +build() unique_ptr~Computer~
+    }
+    ComputerBuilder *-- Computer
 ```
 
-### 📡 Observer
-*   **Problem:** One object changes state and others need to know immediately.
-*   **Why use it?:** To create a subscription model (like YouTube notifications) where the "Subject" doesn't need to know the details of the "Observers."
+### 👑 Singleton
+```mermaid
+classDiagram
+    class ConfigurationManager {
+        -string configData
+        -ConfigurationManager()
+        +static getInstance() ConfigurationManager&
+        +setConfig(string config)
+        +getConfig() string
+    }
+```
+
+---
+
+## 🧱 Structural Patterns
+
+### 🔌 Adapter
+```mermaid
+classDiagram
+    class TypeCPhone { <<interface>> +chargeWithTypeC()* }
+    class OldMicroUsbPhone { +chargeWithMicroUsb() }
+    class MicroUsbToTypeCAdapter {
+        -unique_ptr~OldMicroUsbPhone~ legacyPhone
+        +chargeWithTypeC()
+    }
+    TypeCPhone <|-- MicroUsbToTypeCAdapter
+    MicroUsbToTypeCAdapter o-- OldMicroUsbPhone
+```
+
+### 🌉 Bridge
+```mermaid
+classDiagram
+    class Device {
+        <<interface>>
+        +isEnabled()* bool
+        +disabled()*
+        +setVolume(int percent)*
+    }
+    class Tv { +isEnabled(), +disabled(), +setVolume() }
+    class Radio { +isEnabled(), +disabled(), +setVolume() }
+    class RemoteControl {
+        #shared_ptr~Device~ device
+        +togglePower()
+        +volumeUp()
+    }
+    class AdvancedRemoteControl { +mute() }
+    
+    Device <|-- Tv
+    Device <|-- Radio
+    RemoteControl o-- Device
+    RemoteControl <|-- AdvancedRemoteControl
+```
+
+### 🌳 Composite
+```mermaid
+classDiagram
+    class FileSystemItem {
+        #string name
+        +display(string indentation)*
+        +getSize()* int
+    }
+    class File {
+        -int size
+        +display(string indentation)
+        +getSize() int
+    }
+    class Folder {
+        -vector~unique_ptr~FileSystemItem~~ children
+        +add(unique_ptr~FileSystemItem~ item)
+        +display(string indentation)
+        +getSize() int
+    }
+    FileSystemItem <|-- File
+    FileSystemItem <|-- Folder
+    Folder o-- FileSystemItem
+```
+
+### 🧣 Decorator
+```mermaid
+classDiagram
+    class Beverage {
+        <<interface>>
+        +getDescription()* string
+        +cost()* double
+    }
+    class Espresso { +getDescription(), +cost() }
+    class CondimentDecorator {
+        #unique_ptr~Beverage~ beverage
+    }
+    class Milk { +getDescription(), +cost() }
+    class Sugar { +getDescription(), +cost() }
+
+    Beverage <|-- Espresso
+    Beverage <|-- CondimentDecorator
+    CondimentDecorator <|-- Milk
+    CondimentDecorator <|-- Sugar
+    CondimentDecorator o-- Beverage
+```
+
+### 🏛️ Facade
+```mermaid
+classDiagram
+    class HomeTheaterFacade {
+        -unique_ptr~TheaterLights~ lights
+        -unique_ptr~Projector~ projector
+        -unique_ptr~Amplifier~ amp
+        +watchMovie()
+        +endMovie()
+    }
+    class TheaterLights { +dim(), +on() }
+    class Projector { +on(), +off(), +setInputWideScreen() }
+    class Amplifier { +on(), +off(), +setStreamingAudio(), +setVolume() }
+
+    HomeTheaterFacade --> TheaterLights
+    HomeTheaterFacade --> Projector
+    HomeTheaterFacade --> Amplifier
+```
+
+### 🪶 Flyweight
+```mermaid
+classDiagram
+    class TreeModel {
+        -string name
+        -string color
+        -string textureData
+        +draw(int x, int y)
+    }
+    class TreeFactory {
+        -unordered_map~string, shared_ptr~TreeModel~~ treeModels
+        +getTreeModel(string name, string color, string texture) shared_ptr~TreeModel~
+    }
+    class Tree {
+        -int x, y
+        -shared_ptr~TreeModel~ model
+        +draw()
+    }
+    TreeFactory o-- TreeModel
+    Tree o-- TreeModel
+```
+
+### 🛡️ Proxy
+```mermaid
+classDiagram
+    class Graphic { <<interface>> +draw()* }
+    class HighResImage { -string filename, -loadFromDisk(), +draw() }
+    class ImageProxy {
+        -string filename
+        -unique_ptr~HighResImage~ realImage
+        +draw()
+    }
+    Graphic <|-- HighResImage
+    Graphic <|-- ImageProxy
+    ImageProxy o-- HighResImage
+```
+
+---
+
+## 🔄 Behavioral Patterns
+
+### 🔗 Chain of Responsibility
+```mermaid
+classDiagram
+    class SupportHandler {
+        #shared_ptr~SupportHandler~ nextHandler
+        +setNext(shared_ptr~SupportHandler~ next) shared_ptr~SupportHandler~
+        +handleRequest(Ticket ticket)
+    }
+    class AiChatbot { +handleRequest(Ticket ticket) }
+    class HumanAgent { +handleRequest(Ticket ticket) }
+    class TechLead { +handleRequest(Ticket ticket) }
+    
+    SupportHandler <|-- AiChatbot
+    SupportHandler <|-- HumanAgent
+    SupportHandler <|-- TechLead
+    SupportHandler o-- SupportHandler
+```
+
+### 📜 Command
+```mermaid
+classDiagram
+    class Command { <<interface>> +execute()*, +undo()* }
+    class LightOnCommand { -Light* light, +execute(), +undo() }
+    class LightOffCommand { -Light* light, +execute(), +undo() }
+    class Light { +on(), +off() }
+    class RemoteControl {
+        -vector~Command*~ onCommands
+        -vector~Command*~ offCommands
+        +setCommand(int slot, Command* on, Command* off)
+        +pressOn(int slot)
+        +pressOff(int slot)
+        +pressUndo(int slot)
+    }
+    Command <|-- LightOnCommand
+    Command <|-- LightOffCommand
+    LightOnCommand o-- Light
+    LightOffCommand o-- Light
+    RemoteControl o-- Command
+```
+
+### 📑 Iterator
+```mermaid
+classDiagram
+    class Iterator { <<interface>> +hasNext()* bool, +next()* Book }
+    class ICollection { <<interface>> +createIterator()* unique_ptr~Iterator~ }
+    class Bookshelf { -vector~Book~ books, +addBook(), +getBooks(), +createIterator() }
+    class BookshelfIterator { -Bookshelf& bookshelf, -size_t index, +hasNext(), +next() }
+    
+    Iterator <|-- BookshelfIterator
+    ICollection <|-- Bookshelf
+    BookshelfIterator o-- Bookshelf
+```
+
+### 🔔 Observer
+```mermaid
+classDiagram
+    class IObserver { <<interface>> +update(float temp)* }
+    class ISubject { <<interface>> +attach(IObserver*), +detach(IObserver*), +notify()* }
+    class WeatherStation { -vector~IObserver*~ observers, -float temperature, +attach(), +detach(), +notify(), +setTemperature() }
+    class PhoneDisplay { +update(float temp) }
+    class WindowDisplay { +update(float temp) }
+
+    IObserver <|-- PhoneDisplay
+    IObserver <|-- WindowDisplay
+    ISubject <|-- WeatherStation
+    WeatherStation o-- IObserver
+```
+
+### 🎯 Strategy
+```mermaid
+classDiagram
+    class PaymentStrategy { <<interface>> +pay(double amount)* }
+    class CreditCardPayment { -string cardNumber, +pay(double amount) }
+    class PayPalPayment { -string email, +pay(double amount) }
+    class ShoppingCart { -unique_ptr~PaymentStrategy~ paymentMethod, +setPaymentMethod(), +checkout() }
+
+    PaymentStrategy <|-- CreditCardPayment
+    PaymentStrategy <|-- PayPalPayment
+    ShoppingCart o-- PaymentStrategy
+```
+
+### 📋 Template Method
+```mermaid
+classDiagram
+    class DocumentParser {
+        +processDocument(string filePath)
+        #openFile(), #runAnalytics(), #closeFile()
+        #extractRawText()*
+        #hookSendNotification() bool
+    }
+    class PdfParser { #extractRawText(), #hookSendNotification() }
+    class CsvParser { #extractRawText() }
+    
+    DocumentParser <|-- PdfParser
+    DocumentParser <|-- CsvParser
+```
 
 ---
 
 ## 🍔 Case Study: Food Delivery Application
-
-The `foodDelivery/` folder contains a miniature version of a real-world system.
-
-### Core Architecture
-- **Managers:** `OrderManager`, `RestaurantManager` (Singleton-like centralized control).
-- **Models:** `User`, `Restaurant`, `MenuItem`, `Cart`.
-- **Patterns Integrated:**
-    - **Strategy:** `PaymentStrategy` for Credit Card and UPI payments.
-    - **Factory:** `OrderFactory` to distinguish between "Now" and "Scheduled" orders.
-    - **Models:** Heavy use of inheritance for `DeliveryOrder` vs `PickupOrder`.
-
-### File Map
-- `main.cpp`: Entry point for the application simulation.
-- `models/`: Plain Data Objects.
-- `strategies/`: Interchangeable algorithms for payment.
-- `factories/`: Logic for object creation.
 
 ### Detailed System UML Diagram
 ```mermaid
@@ -361,9 +621,3 @@ classDiagram
     NowOrderFactory ..> PickupOrder : creates
     NowOrderFactory ..> TimeUtils : uses
 ```
-
-
----
-
-## 📄 License
-This project is for educational purposes. Feel free to use the code for learning or as a base for your own projects.
