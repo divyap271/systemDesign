@@ -43,3 +43,13 @@ class ConfigurationManager{
         return configData;
     }
 };
+
+int main(){
+    // Access the singleton instance and set configuration
+    ConfigurationManager::getInstance().setConfig("Custom Config");
+    
+    // Access the singleton instance again and get configuration
+    cout << "Current Config: " << ConfigurationManager::getInstance().getConfig() << endl;
+
+    return 0;
+}

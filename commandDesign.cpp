@@ -42,7 +42,8 @@ public:
 };
 
 class LightOffCommand : public Command{
-private:    Light *light;
+private:
+    Light *light;
 public:    
     LightOffCommand(Light *l) : light(l) {}
     void execute() override {
